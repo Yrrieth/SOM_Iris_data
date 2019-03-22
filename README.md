@@ -4,9 +4,7 @@
 
 ***
 
-iris.data provided ![here](http://archive.ics.uci.edu/ml/datasets/Iris)
-
-***
+iris.data provided [here](http://archive.ics.uci.edu/ml/datasets/Iris)
 
 ### Run
 
