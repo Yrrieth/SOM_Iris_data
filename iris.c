@@ -176,7 +176,6 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 		}
 	}
 
-	printf("FATE/EXTELLA LINK\n");
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
 			for(k = 0; k < 4; k++) {
@@ -184,6 +183,27 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 			}
 		}
 	}
-
 	return net;
+}
+
+irisData_t* take_one_random_data(irisRand_t *iris_shuffled, int number_line) {
+	int i, j;
+	int num = rand() % number_line;
+	irisData_t* test_bmu = allocIrisData_t(1);
+
+	for (i = 0; i < number_line; i++) {
+		if (num == i) {
+			test_bmu[0].index = iris_shuffled[i].index;
+		}
+		for (j = 0; j < 4; j++) {
+			if (num == i) {
+				test_bmu[0].value[j] = iris_shuffled[i].irisDataTab->value[j];
+			}
+		}
+		if (num == i) {
+			test_bmu[0].name = iris_shuffled[i].irisDataTab->name;
+		}
+	}
+
+	return test_bmu;
 }

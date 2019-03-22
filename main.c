@@ -65,6 +65,11 @@ int main() {
 
 	print_net_map_node(net, number_node);
 
+	printf("\nVecteur de donnée aléatoire\n");
+	irisData_t* test_bmu;
+	test_bmu = take_one_random_data(iris_shuffled, number_line);
+	print_data(test_bmu, 1);
+
 
 	printf("z\n");
 	fclose(file_opened);
