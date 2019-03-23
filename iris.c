@@ -143,7 +143,7 @@ net_t* allocNet_t (int size) {
 	net_t* tmp;
 	int i;
 	tmp = malloc(sizeof(net_t));
-	tmp->pointer = malloc(sizeof(double));
+	tmp->pointer = malloc(4 * sizeof(double));
 	tmp->map = malloc(size * sizeof(irisData_t*));
 	for (i = 0; i < size; i++) {
 		tmp->map[i] = malloc(size * sizeof(irisData_t));
@@ -186,31 +186,21 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 	return net;
 }
 
-irisData_t* take_one_random_data(irisRand_t *iris_shuffled, int number_line) {
+void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line) {
 	int i, j;
 	int num = rand() % number_line;
-	irisData_t* test_bmu = allocIrisData_t(1);
 
 	for (i = 0; i < number_line; i++) {
-		if (num == i) {
-			test_bmu[0].index = iris_shuffled[i].index;
-		}
 		for (j = 0; j < 4; j++) {
 			if (num == i) {
-				test_bmu[0].value[j] = iris_shuffled[i].irisDataTab->value[j];
+				net->pointer[j] = iris_shuffled[i].irisDataTab->value[j];
 			}
 		}
-		if (num == i) {
-			test_bmu[0].name = iris_shuffled[i].irisDataTab->name;
-		}
 	}
-
-	return test_bmu;
 }
 
-void bmu (irisData_t *test_bmu, net_t *net, int number_node) {
+void bmu (net_t *net, int number_node) {
 	int i, j, k;
-	irisData_t *tmp = allocIrisData_t(1);
 	double distance;
 	double tab_distance[number_node][number_node];
 	double bmu = 100.0;
@@ -219,22 +209,19 @@ void bmu (irisData_t *test_bmu, net_t *net, int number_node) {
 		for (j = 0; j < number_node; j++) {
 			distance = 0.0;
 			for (k = 0; k < 4; k++) {
-				tmp->value[k] = net->map[i][j].value[k];
-				distance = distance + pow(fabs(tmp->value[k] - test_bmu->value[k]), 2);
-				printf("%f\n", distance);
+				distance = distance + pow(fabs(net->map[i][j].value[k] - net->pointer[k]), 2);
 			}
 			distance = sqrt(distance);
 			printf("i : %d, j: %d, Distance euclidienne : %f\n", i, j, distance);
 			tab_distance[i][j] = distance;
 		}
 	}
-	printf("a\n");
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
 			if (tab_distance[i][j] < bmu) {
 				bmu = tab_distance[i][j];
 			} else if (tab_distance[i][j] == bmu) {
-				printf("crée un autre tab\n");
+				printf("crée un autre tab\n\n\n\n\n");
 			}
 		}
 	}
