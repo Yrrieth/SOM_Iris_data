@@ -156,7 +156,7 @@ void print_net_map_node(net_t *net, int number_node) {
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
 			for(k = 0; k < 4; k++) {
-				printf("i: %d, j: %d, k: %d = %f\n",i, j, k, net->map[i][j].value[k]);
+				printf("i : %d, j : %d, k : %d = %f\n",i, j, k, net->map[i][j].value[k]);
 			}
 		}
 	}
@@ -206,4 +206,39 @@ irisData_t* take_one_random_data(irisRand_t *iris_shuffled, int number_line) {
 	}
 
 	return test_bmu;
+}
+
+void bmu (irisData_t *test_bmu, net_t *net, int number_node) {
+	int i, j, k;
+	irisData_t *tmp = allocIrisData_t(1);
+	double distance;
+	double tab_distance[number_node][number_node];
+	double bmu = 100.0;
+
+	for (i = 0; i < number_node; i++) {
+		for (j = 0; j < number_node; j++) {
+			distance = 0.0;
+			for (k = 0; k < 4; k++) {
+				tmp->value[k] = net->map[i][j].value[k];
+				distance = distance + pow(fabs(tmp->value[k] - test_bmu->value[k]), 2);
+				printf("%f\n", distance);
+			}
+			distance = sqrt(distance);
+			printf("i : %d, j: %d, Distance euclidienne : %f\n", i, j, distance);
+			tab_distance[i][j] = distance;
+		}
+	}
+	printf("a\n");
+	for (i = 0; i < number_node; i++) {
+		for (j = 0; j < number_node; j++) {
+			if (tab_distance[i][j] < bmu) {
+				bmu = tab_distance[i][j];
+			} else if (tab_distance[i][j] == bmu) {
+				printf("crée un autre tab\n");
+			}
+		}
+	}
+
+	printf("bmu = %f\n", bmu); // Renvoyer aussi les coordonées ? Struct coord ??
+
 }

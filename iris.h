@@ -40,5 +40,7 @@ void print_net_map_node(net_t *net, int number_node);
 net_t* random_in_interval (irisData_t *iris_interval_lower, irisData_t *iris_interval_upper, int number_node);
 irisData_t* take_one_random_data(irisRand_t *iris_shuffled, int number_line);
 
+void bmu (irisData_t *test_bmu, net_t *net, int number_node);
+
 // Prototype main.c
 int main();

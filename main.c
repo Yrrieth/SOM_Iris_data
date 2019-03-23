@@ -70,6 +70,9 @@ int main() {
 	test_bmu = take_one_random_data(iris_shuffled, number_line);
 	print_data(test_bmu, 1);
 
+	printf("\nbmu\n");
+	bmu(test_bmu, net, number_node);
+
 
 	printf("z\n");
 	fclose(file_opened);
