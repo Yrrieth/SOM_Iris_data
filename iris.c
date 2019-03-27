@@ -199,33 +199,75 @@ void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line
 	}
 }
 
-void bmu (net_t *net, int number_node) {
+bmu_t** allocBmu_t (int size) {
+	bmu_t **tmp;
+	int i;
+	tmp = malloc(size * sizeof(bmu_t));
+	for (i = 0; i < size; i++) {
+		tmp[i] = malloc(size * sizeof(bmu_t));
+	}
+	return tmp;
+}
+
+bmu_t** find_bmu (net_t *net, int number_node) {
 	int i, j, k;
 	double distance;
 	double tab_distance[number_node][number_node];
-	double bmu = 100.0;
 
-	for (i = 0; i < number_node; i++) {
+	bmu_t **distance_tab;
+	distance_tab = allocBmu_t(number_node);
+
+	bmu_t **bmu;
+	bmu = allocBmu_t(1);
+	bmu[0][0].distance = 100.0;
+	
+
+	/**
+	 * Calcule la distance euclidienne entre un vecteur de donnée (net->pointer) 
+	 * et chacun des vecteurs de neurone de la map
+	 */
+	for (i = 0; i < number_node; i++) { 
 		for (j = 0; j < number_node; j++) {
 			distance = 0.0;
 			for (k = 0; k < 4; k++) {
 				distance = distance + pow(fabs(net->map[i][j].value[k] - net->pointer[k]), 2);
 			}
 			distance = sqrt(distance);
-			printf("i : %d, j: %d, Distance euclidienne : %f\n", i, j, distance);
-			tab_distance[i][j] = distance;
+			//printf("i : %d, j: %d, Distance euclidienne : %f\n", i, j, distance);
+			distance_tab[i][j].distance = distance;
+			distance_tab[i][j].x = i;
+			distance_tab[i][j].y = j;
 		}
 	}
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
-			if (tab_distance[i][j] < bmu) {
-				bmu = tab_distance[i][j];
-			} else if (tab_distance[i][j] == bmu) {
+			if (distance_tab[i][j].distance < bmu[0][0].distance) {
+				bmu[0][0].distance = distance_tab[i][j].distance;
+				bmu[0][0].x = distance_tab[i][j].x;
+				bmu[0][0].y = distance_tab[i][j].y;
+			} else if (distance_tab[i][j].distance == bmu[0][0].distance) {
 				printf("crée un autre tab\n\n\n\n\n");
 			}
 		}
 	}
+	//printf("bmu = %f ", bmu[0][0].distance); // Renvoyer aussi les coordonées ? Struct coord ??
+	return bmu;
+}
 
-	printf("bmu = %f\n", bmu); // Renvoyer aussi les coordonées ? Struct coord ??
+void voisin (net_t *net, bmu_t **bmu) {
 
+}
+
+void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node) {
+	int i;
+	double alpha = 0.0;
+	bmu_t **bmu;
+	for (i = 0; i < iteration_max; i++) {
+		printf("%d : ", i);
+		take_one_random_data(iris_shuffled, net, number_line);
+		bmu = find_bmu (net, number_node);
+
+		alpha = 1.0 - ((double)i / (double)iteration_max);
+		printf("bmu = %f, x = %d, y = %d, a = %f\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y, alpha);
+	}
 }

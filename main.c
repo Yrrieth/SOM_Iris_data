@@ -65,21 +65,20 @@ int main() {
 
 	print_net_map_node(net, number_node);
 
-	printf("\nVecteur de donnée aléatoire\n");
-	//irisData_t* test_bmu;
+	/*printf("\nVecteur de donnée aléatoire\n");
 	take_one_random_data(iris_shuffled, net, number_line);
-	//test_bmu = take_one_random_data(iris_shuffled, number_line);
-	//print_data(test_bmu, 1);
+
 	for (int i = 0; i < 4; i++) {
 		printf("%f ", net->pointer[i]);
 	}
 	printf("\n");
 
 	printf("\nBMU\n");
-	//bmu(test_bmu, net, number_node);
-	bmu(net, number_node);
+	bmu(net, number_node);*/
 
+	int iteration_max = 500;
 
+	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node);
 
 
 	printf("z\n");

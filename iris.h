@@ -24,6 +24,12 @@ typedef struct net {
 	int neighborhood; // Rayon de voisinage
 } net_t;
 
+typedef struct bmu {
+	double distance;
+	int x;
+	int y;
+} bmu_t;
+
 // Prototype iris.c
 irisData_t* allocIrisData_t(int size);
 int count_number_line(FILE* file_opened);
@@ -40,7 +46,9 @@ void print_net_map_node(net_t *net, int number_node);
 net_t* random_in_interval (irisData_t *iris_interval_lower, irisData_t *iris_interval_upper, int number_node);
 void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line);
 
-void bmu (net_t *net, int number_node);
+bmu_t** allocBmu_t (int size);
+bmu_t** find_bmu (net_t *net, int number_node);
+void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node);
 
 // Prototype main.c
 int main();
