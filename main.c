@@ -62,6 +62,7 @@ int main() {
 
 	printf("\nVecteur de neurones\n");
 	net = random_in_interval(iris_interval_lower, iris_interval_upper, number_node);
+	net->neighborhood = 0.1f; // la variable net est alloué dans la fonction rand_in_interval, donc on peut met cette assignation ici
 
 	print_net_map_node(net, number_node);
 

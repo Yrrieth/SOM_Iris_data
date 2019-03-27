@@ -212,7 +212,6 @@ bmu_t** allocBmu_t (int size) {
 bmu_t** find_bmu (net_t *net, int number_node) {
 	int i, j, k;
 	double distance;
-	double tab_distance[number_node][number_node];
 
 	bmu_t **distance_tab;
 	distance_tab = allocBmu_t(number_node);
@@ -254,8 +253,34 @@ bmu_t** find_bmu (net_t *net, int number_node) {
 	return bmu;
 }
 
-void voisin (net_t *net, bmu_t **bmu) {
+void voisin (net_t *net, bmu_t **bmu, int number_node) {
+	int i, j, k;
+	double voisin; // Distance euclidienne entre un noeud et le bmu
 
+	irisData_t *bmu_value = allocIrisData_t(1);
+
+	for (i = 0; i < number_node; i++) {
+		for (j = 0; j < number_node; j++) {
+			if (i == bmu[0][0].x && j == bmu[0][0].y) {
+				for (k = 0; k < 4; k++) {
+					bmu_value[0].value[k] = net->map[i][j].value[k];
+					printf("%f ", bmu_value[0].value[k]);
+				}
+			}
+		}
+	}
+
+	for (i = 0; i < number_node; i++) {
+		for (j = 0; j < number_node; j++) {
+			voisin = 0.0;
+			for (k = 0; k < 4; k++) {
+				voisin += pow(fabs(net->map[i][j].value[k] - bmu_value[0].value[k]), 2);
+			}
+			voisin = sqrt(voisin);
+			if (voisin < net->neighborhood && voisin != 0)
+				printf(" voisin = %f \n", voisin);
+		}
+	}
 }
 
 void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node) {
@@ -266,8 +291,9 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 		printf("%d : ", i);
 		take_one_random_data(iris_shuffled, net, number_line);
 		bmu = find_bmu (net, number_node);
+		voisin(net, bmu, number_node);
 
 		alpha = 1.0 - ((double)i / (double)iteration_max);
-		printf("bmu = %f, x = %d, y = %d, a = %f\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y, alpha);
+		//printf("bmu = %f, x = %d, y = %d, a = %f\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y, alpha);
 	}
 }
