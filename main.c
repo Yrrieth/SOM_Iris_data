@@ -66,6 +66,10 @@ int main() {
 
 	print_net_map_node(net, number_node);
 
+	printf("\n\033[22;31mIris-setosa\n");
+	printf("\033[22;32mIris-versicolor\n");
+	printf("\033[22;34mIris-virginica\033[22;37m\n");
+
 	printf("\nOrdonnancement\n");
 
 	int iteration_max = 500;
@@ -90,5 +94,7 @@ int main() {
 	fclose(file_opened);
 	free(iris_tab);
 	free(iris_shuffled);
+	free(resultat);
+	free(net);
 	return 0;
 }

@@ -379,7 +379,7 @@ void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int nu
 				printf("\033[22;37m%d ", resultat[i][j]);
 			}
 		}
-		printf("\n");
+		printf("\033[22;37m\n");
 	}
 }
 
