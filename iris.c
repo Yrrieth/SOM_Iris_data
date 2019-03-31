@@ -155,8 +155,9 @@ void print_net_map_node(net_t *net, int number_node) {
 	int i, j , k;
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
+			printf("i : %d, j : %d \n", i, j);
 			for(k = 0; k < 4; k++) {
-				printf("i : %d, j : %d, k : %d = %f\n",i, j, k, net->map[i][j].value[k]);
+				printf("k : %d = %f\n", k, net->map[i][j].value[k]);
 			}
 		}
 	}
@@ -202,7 +203,7 @@ void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line
 bmu_t** allocBmu_t (int size) {
 	bmu_t **tmp;
 	int i;
-	tmp = malloc(size * sizeof(bmu_t));
+	tmp = malloc(size * sizeof(bmu_t*));
 	for (i = 0; i < size; i++) {
 		tmp[i] = malloc(size * sizeof(bmu_t));
 	}
@@ -217,7 +218,15 @@ bmu_t** find_bmu (net_t *net, int number_node) {
 	distance_tab = allocBmu_t(number_node);
 
 	bmu_t **bmu;
-	bmu = allocBmu_t(1);	
+	bmu = allocBmu_t(1);
+
+	bmu_t **bmu_rand;
+	bmu_rand = allocBmu_t(150);
+	int i_bmu_rand = 0;
+	int j_bmu_rand = 0;
+	int i_rand = 0;
+	int j_rand = 0;
+
 
 	/**
 	 * Calcule la distance euclidienne entre un vecteur de donnée (net->pointer) 
@@ -232,70 +241,173 @@ bmu_t** find_bmu (net_t *net, int number_node) {
 			distance = sqrt(distance);
 			//printf("i : %d, j: %d, Distance euclidienne : %f\n", i, j, distance);
 			distance_tab[i][j].distance = distance;
-			distance_tab[i][j].x = i;
-			distance_tab[i][j].y = j;
+			distance_tab[i][j].x = j;
+			distance_tab[i][j].y = i;
 		}
 	}
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
-			if (i == 0 && j == 0) {
-				bmu[0][0].distance = distance_tab[i][j].distance; // Valeur la plus grande au début
+			if (i == 0 && j == 0) { // Valeur la plus grande au début
+				bmu[0][0].distance = distance_tab[i][j].distance;
 			} else if (distance_tab[i][j].distance < bmu[0][0].distance) {
 				bmu[0][0].distance = distance_tab[i][j].distance;
 				bmu[0][0].x = distance_tab[i][j].x;
 				bmu[0][0].y = distance_tab[i][j].y;
+
+				bmu_rand[i_bmu_rand][j_bmu_rand].x = distance_tab[i][j].x;
+				bmu_rand[i_bmu_rand][j_bmu_rand].y = distance_tab[i][j].y;
 			} else if (distance_tab[i][j].distance == bmu[0][0].distance) {
-				printf("crée un autre tab\n\n\n\n\n");
+				//printf("crée un autre tab\n");
+				bmu_rand[i_bmu_rand][j_bmu_rand].distance = distance_tab[i][j].distance;
+				bmu_rand[i_bmu_rand][j_bmu_rand].x = distance_tab[i][j].x;
+				bmu_rand[i_bmu_rand][j_bmu_rand].y = distance_tab[i][j].y;
+				j_bmu_rand++;
+				if (j_bmu_rand == number_node - 1) {
+					i_bmu_rand++;
+					j_bmu_rand = 0;
+				}
 			}
 		}
 	}
-	//printf("bmu = %f ", bmu[0][0].distance); // Renvoyer aussi les coordonées ? Struct coord ??
+
+	if (i_bmu_rand > 0 || j_bmu_rand > 0) {
+		if (i_bmu_rand > 0)
+			i_rand = rand() % i_bmu_rand;
+		if (j_bmu_rand > 0)
+			j_rand = rand() % j_bmu_rand;
+		//printf("rand i = %d et j = %d\n", i_rand, j_rand);
+		bmu[0][0].distance = bmu_rand[i_bmu_rand][j_bmu_rand].distance;
+		bmu[0][0].x = bmu_rand[i_bmu_rand][j_bmu_rand].x;
+		bmu[0][0].y = bmu_rand[i_bmu_rand][j_bmu_rand].y;
+		//printf("bmu dans fonction, i = %d, j = %d\n", bmu[0][0].x, bmu[0][0].y);
+	}
+
+	free(bmu_rand);
 	return bmu;
 }
 
-void voisin (net_t *net, bmu_t **bmu, int number_node) {
+void voisin (net_t *net, bmu_t **bmu, int number_node, int alpha) {
 	int i, j, k;
-	double voisin; // Distance euclidienne entre un noeud et le bmu
+	int i_start, j_start, i_end, j_end;
 
-	irisData_t *bmu_value = allocIrisData_t(1);
+	//net_t *net 
+
+	// Limite gauche
+	if (bmu[0][0].x < net->neighborhood) { 
+		j_start = 0;
+	} else {
+		j_start = bmu[0][0].x - net->neighborhood;
+	}
+
+	 // Limite haut
+	if (bmu[0][0].y < net->neighborhood) {
+		i_start = 0;
+	} else {
+		i_start = bmu[0][0].y - net->neighborhood;
+	}
+	//if (bmu[0][0].x > number_node - net->neighborhood)
+	
+
+	// Limite droite
+	if (bmu[0][0].x > number_node - net->neighborhood) { 
+		j_end = number_node;
+	} else {
+		j_end = bmu[0][0].x + net->neighborhood;
+	}
+
+	// Limite bas
+	if (bmu[0][0].y > number_node - net->neighborhood) { 
+		i_end = number_node;
+	} else {
+		i_end = bmu[0][0].y + net->neighborhood;
+	}
+
+	for (i = i_start; i < i_end; i++) {
+		for (j = j_start; j < j_end; j++) {
+			for (k = 0; k < 4; k++) {
+				net->map[i][j].value[k] = net->map[i][j].value[k] + alpha * (net->pointer[k] - net->map[i][j].value[k]);
+			}
+		}
+	}
+}
+
+void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int number_node, int** resultat) {
+	int i, j, k, l;
+	int identique = 0;
+	int res[number_node][number_node];
 
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
-			if (i == bmu[0][0].x && j == bmu[0][0].y) {
-				for (k = 0; k < 4; k++) {
-					bmu_value[0].value[k] = net->map[i][j].value[k];
-					printf("%f ", bmu_value[0].value[k]); 
+			resultat[i][j] = 0;
+		}		
+	}
+
+	for (i = 0; i < number_node; i++) { // Pour chaque vecteur de neurone
+		for (j = 0; j < number_node; j++) {
+			//printf("i = %d, j  = %d\n", i, j);
+			for (k = 0; k < number_line; k++) { // On compare à chaque vecteur de donnée
+				identique = 0;
+				for (l = 0; l < 4; l++) {       // Les valeurs de chaque donnée
+					if (net->map[i][j].value[l] == iris_shuffled[k].irisDataTab->value[l]) {
+						identique++;
+					}
 				}
-				printf(", %d, %d\n", i, j);
+				if (identique == 4) {
+					if (strcmp(iris_shuffled[k].irisDataTab->name, "Iris-setosa") == 0) {
+						resultat[i][j] = 1;	
+					} else if (strcmp(iris_shuffled[k].irisDataTab->name, "Iris-versicolor") == 0) {
+						resultat[i][j] = 2;
+					} else if (strcmp(iris_shuffled[k].irisDataTab->name, "Iris-virginica") == 0) {
+						resultat[i][j] = 3;
+					} else {
+						resultat[i][j] = 0;
+					}					
+				}
 			}
 		}
 	}
 
 	for (i = 0; i < number_node; i++) {
 		for (j = 0; j < number_node; j++) {
-			voisin = 0.0;
-			for (k = 0; k < 4; k++) {
-				voisin += pow(fabs(net->map[i][j].value[k] - bmu_value[0].value[k]), 2);
+			if (resultat[i][j] == 1) {
+				printf("\033[22;31m%d ", resultat[i][j]);
+			} else if (resultat[i][j] == 2) {
+				printf("\033[22;32m%d ", resultat[i][j]);
+			} else if (resultat[i][j] == 3) {
+				printf("\033[22;34m%d ", resultat[i][j]);
+			} else {
+				printf("\033[22;37m%d ", resultat[i][j]);
 			}
-			voisin = sqrt(voisin);
-			if (voisin < net->neighborhood && voisin != 0)
-				printf(" voisin = %f, %d, %d \n", voisin, i, j);
 		}
+		printf("\n");
 	}
 }
 
 void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node) {
-	int i;
+	int i, j, k;
 	double alpha = 0.0;
 	bmu_t **bmu;
-	for (i = 0; i < iteration_max; i++) {
-		printf("%d : ", i);
-		take_one_random_data(iris_shuffled, net, number_line);
-		bmu = find_bmu (net, number_node);
-		voisin(net, bmu, number_node);
-
+	for (i = 0; i < 2/*iteration_max*/; i++) {
 		alpha = 1.0 - ((double)i / (double)iteration_max);
-		printf("alpha = %f\n", alpha);
-		//printf("bmu = %f, x = %d, y = %d, a = %f\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y, alpha);
+		if (i > (iteration_max / 3) * 2) {
+			net->neighborhood = 1;
+		} else if (i > iteration_max / 3)  {
+			net->neighborhood = 2;
+		}
+		//printf("i = %d\n", i);
+
+		//printf("rv = %d, %d\n", net->neighborhood, (iteration_max / 3)*2);
+		//printf("alpha = %f\n", alpha);
+
+		// Itére sur les vecteurs de données mélangés
+		for (j = 0; j < 2; j++) {
+			//take_one_random_data(iris_shuffled, net, number_line);
+			for (k = 0; k < 4; k++) {
+				net->pointer[k] = iris_shuffled[j].irisDataTab->value[k];
+			}
+			bmu = find_bmu (net, number_node);
+			voisin(net, bmu, number_node, alpha);
+			//printf("dist eucli = %f, x = %d, y = %d\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y);	
+		}
 	}
 }

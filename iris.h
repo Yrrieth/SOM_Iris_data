@@ -21,12 +21,11 @@ typedef struct net {
 	double *pointer;
 	double alpha;
 	irisData_t **map;
-	float neighborhood; // Rayon de voisinage
+	int neighborhood; // Rayon de voisinage
 } net_t;
 
 typedef struct bmu {
 	double distance;
-	irisData_t *bmu_value;
 	int x;
 	int y;
 } bmu_t;
@@ -50,7 +49,8 @@ void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line
 bmu_t** allocBmu_t (int size);
 bmu_t** find_bmu (net_t *net, int number_node);
 void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node);
-void voisin (net_t *net, bmu_t **bmu, int number_node);
+void voisin (net_t *net, bmu_t **bmu, int number_node, int alpha);
+void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int number_node, int** resultat);
 
 // Prototype main.c
 int main();

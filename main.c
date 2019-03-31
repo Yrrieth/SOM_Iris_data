@@ -62,15 +62,31 @@ int main() {
 
 	printf("\nVecteur de neurones\n");
 	net = random_in_interval(iris_interval_lower, iris_interval_upper, number_node);
-	net->neighborhood = 0.1f; // la variable net est alloué dans la fonction rand_in_interval, donc on peut met cette assignation ici
+	net->neighborhood = 3; // la variable net est alloué dans la fonction rand_in_interval, donc on peut met cette assignation ici
 
 	print_net_map_node(net, number_node);
+
+	printf("\nOrdonnancement\n");
 
 	int iteration_max = 500;
 
 	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node);
 
-	printf("z\n");
+	int** resultat;
+	resultat = malloc(number_node * sizeof(int*));
+	for (int i = 0; i < number_node; i++) {
+		resultat[i] = malloc(number_node * sizeof(int));
+	}
+
+	etiquettage (net, iris_shuffled, number_line, number_node, resultat);
+
+	printf("\nAffinage\n");
+	apprentissage (1500, iris_shuffled, net, number_line, number_node);
+
+	etiquettage (net, iris_shuffled, number_line, number_node, resultat);
+
+
+
 	fclose(file_opened);
 	free(iris_tab);
 	free(iris_shuffled);
