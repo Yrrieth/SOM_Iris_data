@@ -18,7 +18,7 @@ typedef struct irisRand {
 } irisRand_t;
 
 typedef struct net {
-	double *pointer;
+	double *capteur;
 	double alpha;
 	irisData_t **map;
 	int neighborhood; // Rayon de voisinage
