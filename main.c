@@ -5,6 +5,7 @@ int main() {
 	irisRand_t *iris_shuffled;
 	irisData_t *iris_average;
 	int number_line;
+	int number_data = 4;
 
 	irisData_t *iris_interval_upper;
 	irisData_t *iris_interval_lower;
@@ -13,7 +14,8 @@ int main() {
 	net_t *net;
 	irisData_t *nodes;
 
-	int number_node = 10;
+	int number_node_horiz = 10;
+	int number_node_verti = 6;
 
 	FILE* file_opened = fopen("iris.data", "r");
 	if (!file_opened) {
@@ -61,10 +63,10 @@ int main() {
 	printf("a\n");
 
 	printf("\nVecteur de neurones\n");
-	net = random_in_interval(iris_interval_lower, iris_interval_upper, number_node);
+	net = random_in_interval(iris_interval_lower, iris_interval_upper, number_node_horiz, number_node_verti);
 	net->neighborhood = 3; // la variable net est alloué dans la fonction rand_in_interval, donc on peut met cette assignation ici
 
-	print_net_map_node(net, number_node);
+	print_net_map_node(net, number_node_horiz, number_node_verti);
 
 	printf("\n\033[22;31mIris-setosa\n");
 	printf("\033[22;32mIris-versicolor\n");
@@ -74,20 +76,21 @@ int main() {
 
 	int iteration_max = 500;
 
-	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node);
+	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node_horiz, number_node_verti);
 
 	int** resultat;
-	resultat = malloc(number_node * sizeof(int*));
-	for (int i = 0; i < number_node; i++) {
-		resultat[i] = malloc(number_node * sizeof(int));
+	resultat = malloc(number_node_verti * sizeof(int*));
+	for (int i = 0; i < number_node_verti; i++) {
+		resultat[i] = malloc(number_node_horiz * sizeof(int));
 	}
 
-	etiquettage (net, iris_shuffled, number_line, number_node, resultat);
+	etiquettage (net, iris_shuffled, number_line, number_node_horiz, number_node_verti, resultat);
 
 	printf("\nAffinage\n");
-	apprentissage (1500, iris_shuffled, net, number_line, number_node);
+	iteration_max = 1500;
+	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node_horiz, number_node_verti);
 
-	etiquettage (net, iris_shuffled, number_line, number_node, resultat);
+	etiquettage (net, iris_shuffled, number_line, number_node_horiz, number_node_verti, resultat);
 
 
 
