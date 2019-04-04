@@ -243,6 +243,7 @@ bmu_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti) {
 void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_verti, int alpha) {
 	int i, j, k;
 	int i_start, j_start, i_end, j_end;
+	net_t *net_next = allocNet_t(number_node_horiz, number_node_verti);
 
 	//net_t *net 
 
@@ -283,6 +284,14 @@ void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_ver
 			}
 		}
 	}
+
+	/*for (i = 0; i < number_node_verti; i++) {
+		for (j = 0; j < number_node_horiz; j++) {
+			for (k = 0; k < 4; k++) {
+				net->map[i][j].value[k] = net_next->map[i][j].value[k];
+			}
+		}
+	}*/
 }
 
 void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int number_node_horiz, int number_node_verti, int** resultat) {
@@ -345,7 +354,8 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 	for (i = 0; i < iteration_max; i++) {
 		alpha = 1.0 - ((double)i / (double)iteration_max);
 
-		if (iteration_max / neighborhood_max == i) {
+		//printf("it_max = %d, neigh = %d, aa iter = %d\n", iteration_max, neighborhood_max, (i % (iteration_max/neighborhood_max)));
+		if ((iteration_max/neighborhood_max) - 1 == (i % (iteration_max/neighborhood_max))) {
 			printf("rv = %d\n", net->neighborhood);
 			net->neighborhood--;
 		}
@@ -355,7 +365,7 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 		//printf("alpha = %f\n", alpha);
 
 		// Itére sur les vecteurs de données mélangés
-		for (j = 0; j < 2; j++) {
+		for (j = 0; j < number_line; j++) {
 			for (k = 0; k < 4; k++) {
 				net->capteur[k] = iris_shuffled[j].irisDataTab->value[k];
 			}
@@ -364,4 +374,5 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 			//printf("dist eucli = %f, x = %d, y = %d\n", bmu[0][0].distance, bmu[0][0].x, bmu[0][0].y);	
 		}
 	}
+	net->neighborhood = neighborhood_max;
 }
