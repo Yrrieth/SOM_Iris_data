@@ -28,7 +28,7 @@ typedef struct bmu {
 	double distance;
 	int x;
 	int y;
-} bmu_t;
+} dist_eucli_t;
 
 // Prototype iris.c
 irisData_t* allocIrisData_t(int size);
@@ -46,10 +46,10 @@ void print_net_map_node(net_t *net, int number_node_horiz, int number_node_verti
 net_t* random_in_interval (irisData_t *iris_interval_lower, irisData_t *iris_interval_upper, int number_node_horiz, int number_node_verti);
 void take_one_random_data(irisRand_t *iris_shuffled, net_t *net, int number_line);
 
-bmu_t** allocBmu_t (int size_horiz, int size_verti);
-bmu_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti);
+dist_eucli_t** allocdist_eucli_t (int size_horiz, int size_verti);
+dist_eucli_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti);
 void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, int number_line, int number_node_horiz, int number_node_verti);
-void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_verti, int alpha);
+void voisin (net_t *net, dist_eucli_t **bmu, int number_node_horiz, int number_node_verti, int alpha);
 void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int number_node_horiz, int number_node_verti, int** resultat);
 
 // Prototype main.c

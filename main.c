@@ -14,7 +14,7 @@ int main() {
 	net_t *net;
 	irisData_t *nodes;
 
-	int number_node_horiz = 10;
+	int number_node_horiz = 12;
 	int number_node_verti = 6;
 
 	FILE* file_opened = fopen("iris.data", "r");
@@ -72,26 +72,21 @@ int main() {
 	printf("\033[22;32mIris-versicolor\n");
 	printf("\033[22;34mIris-virginica\033[22;37m\n");
 
-	printf("\nOrdonnancement\n");
-
-	int iteration_max = 500;
-
-	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node_horiz, number_node_verti);
-
 	int** resultat;
 	resultat = malloc(number_node_verti * sizeof(int*));
 	for (int i = 0; i < number_node_verti; i++) {
 		resultat[i] = malloc(number_node_horiz * sizeof(int));
 	}
-
+	
+	printf("\nOrdonnancement\n");
+	int iteration_max = 500;
+	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node_horiz, number_node_verti);
 	etiquettage (net, iris_shuffled, number_line, number_node_horiz, number_node_verti, resultat);
 
 	printf("\nAffinage\n");
 	iteration_max = 1500;
 	apprentissage (iteration_max, iris_shuffled, net, number_line, number_node_horiz, number_node_verti);
-
 	etiquettage (net, iris_shuffled, number_line, number_node_horiz, number_node_verti, resultat);
-
 
 
 	fclose(file_opened);

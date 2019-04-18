@@ -187,25 +187,25 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 	return net;
 }
 
-bmu_t** allocBmu_t (int size_horiz, int size_verti) {
-	bmu_t **tmp;
+dist_eucli_t** allocdist_eucli_t (int size_horiz, int size_verti) {
+	dist_eucli_t **tmp;
 	int i;
-	tmp = malloc(size_verti * sizeof(bmu_t*));
+	tmp = malloc(size_verti * sizeof(dist_eucli_t*));
 	for (i = 0; i < size_verti; i++) {
-		tmp[i] = malloc(size_horiz * sizeof(bmu_t));
+		tmp[i] = malloc(size_horiz * sizeof(dist_eucli_t));
 	}
 	return tmp;
 }
 
-bmu_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti) {
+dist_eucli_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti) {
 	int i, j, k;
 	double distance;
 
-	bmu_t **distance_tab; // Tableau de distance euclidienne
-	distance_tab = allocBmu_t(number_node_horiz, number_node_verti);
+	dist_eucli_t **distance_tab; // Tableau de distance euclidienne
+	distance_tab = allocdist_eucli_t(number_node_horiz, number_node_verti);
 
-	bmu_t **bmu; // Variable qui contiendra le BMU
-	bmu = allocBmu_t(1, 1);
+	dist_eucli_t **bmu; // Variable qui contiendra le BMU
+	bmu = allocdist_eucli_t(1, 1);
 
 	/**
 	 * Calcule la distance euclidienne entre un vecteur de donnée (net->capteur) 
@@ -240,12 +240,10 @@ bmu_t** find_bmu (net_t *net, int number_node_horiz, int number_node_verti) {
 	return bmu;
 }
 
-void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_verti, int alpha) {
+void voisin (net_t *net, dist_eucli_t **bmu, int number_node_horiz, int number_node_verti, int alpha) {
 	int i, j, k;
 	int i_start, j_start, i_end, j_end;
 	net_t *net_next = allocNet_t(number_node_horiz, number_node_verti);
-
-	//net_t *net 
 
 	// Limite gauche
 	if (bmu[0][0].x < net->neighborhood) { 
@@ -254,14 +252,12 @@ void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_ver
 		j_start = bmu[0][0].x - net->neighborhood;
 	}
 
-	 // Limite haut
+	 // Limite haute
 	if (bmu[0][0].y < net->neighborhood) {
 		i_start = 0;
 	} else {
 		i_start = bmu[0][0].y - net->neighborhood;
-	}
-	//if (bmu[0][0].x > number_node - net->neighborhood)
-	
+	}	
 
 	// Limite droite
 	if (bmu[0][0].x > number_node_horiz - net->neighborhood) { 
@@ -270,7 +266,7 @@ void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_ver
 		j_end = bmu[0][0].x + net->neighborhood;
 	}
 
-	// Limite bas
+	// Limite basse
 	if (bmu[0][0].y > number_node_verti - net->neighborhood) { 
 		i_end = number_node_verti;
 	} else {
@@ -284,14 +280,6 @@ void voisin (net_t *net, bmu_t **bmu, int number_node_horiz, int number_node_ver
 			}
 		}
 	}
-
-	/*for (i = 0; i < number_node_verti; i++) {
-		for (j = 0; j < number_node_horiz; j++) {
-			for (k = 0; k < 4; k++) {
-				net->map[i][j].value[k] = net_next->map[i][j].value[k];
-			}
-		}
-	}*/
 }
 
 void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int number_node_horiz, int number_node_verti, int** resultat) {
@@ -350,19 +338,15 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 	int i, j, k;
 	int neighborhood_max = net->neighborhood;
 	double alpha = 0.0;
-	bmu_t **bmu;
+	dist_eucli_t **bmu;
 	for (i = 0; i < iteration_max; i++) {
 		alpha = 1.0 - ((double)i / (double)iteration_max);
 
-		//printf("it_max = %d, neigh = %d, aa iter = %d\n", iteration_max, neighborhood_max, (i % (iteration_max/neighborhood_max)));
 		if ((iteration_max/neighborhood_max) - 1 == (i % (iteration_max/neighborhood_max))) {
 			printf("rv = %d\n", net->neighborhood);
+			//printf("%d\n", (iteration_max/neighborhood_max));
 			net->neighborhood--;
 		}
-		//printf("i = %d\n", i);
-
-		//printf("rv = %d, %d\n", net->neighborhood, (iteration_max / 3)*2);
-		//printf("alpha = %f\n", alpha);
 
 		// Itére sur les vecteurs de données mélangés
 		for (j = 0; j < number_line; j++) {
