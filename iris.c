@@ -5,8 +5,8 @@ irisData_t* allocIrisData_t(int size) {
 	int i;
 	tmp = malloc(size * sizeof(irisData_t));
 	for(i = 0; i < size; i++) {
-		tmp[i].value = malloc(4 * sizeof(double));
-		tmp[i].name = malloc(100 * sizeof(char));
+		tmp[i].value = malloc(NUMBER_DATA * sizeof(double));
+		tmp[i].name = malloc(256 * sizeof(char));
 	}
 	return tmp;
 }
@@ -31,7 +31,7 @@ void print_data(irisData_t* iris_tab, int number_line) {
 	int i, j = 0;
 	for(i = 0; i < number_line; i++) { // General print loop
 		printf("%d : ", iris_tab[i].index);
-		for (j = 0; j < 4; j++) { // print value
+		for (j = 0; j < NUMBER_DATA; j++) { // print value
 			printf("%f ", iris_tab[i].value[j]);
 		}
 		printf(" %s\n", iris_tab[i].name); // print name
@@ -42,7 +42,7 @@ void print_shuffle_data(irisRand_t *iris_shuffled, int number_line) {
 	int i, j;
 	for (i = 0; i < number_line; i++) {
 		printf("%d : ", iris_shuffled[i].index);
-		for (j = 0; j < 4; j++) { // print value
+		for (j = 0; j < NUMBER_DATA; j++) { // print value
 			printf("%f ", iris_shuffled[i].irisDataTab->value[j]);
 		}
 		printf(" %s\n", iris_shuffled[i].irisDataTab->name); // print name
@@ -63,7 +63,7 @@ void take_line(FILE* file_opened, irisData_t* iris_tab) {
 		if (iris_tab[i].size_line > 1) {
 			j = 0; // Reset j
 			iris_tab[i].value[j] = atof(strtok(current_line, ","));
-			for(j = 1; j < 4; j++) {
+			for(j = 1; j < NUMBER_DATA; j++) {
 				iris_tab[i].value[j] = atof(strtok(NULL, ","));
 			}
 			iris_tab[i].name = strdup(strtok(NULL, "\n"));
@@ -76,14 +76,14 @@ void normalize(irisData_t *iris_norm, int number_line) {
 	double norm_vector = 0;
 	int i, j;
 
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < NUMBER_DATA; i++) {
 		norm_vector += pow(iris_norm[0].value[i], 2);
 	}
 
 	norm_vector = sqrt(norm_vector); // Ici, j'ai la norme du vecteur
 
 	for (i = 0; i < number_line; i++) {
-		for (j = 0; j < 4; j++) {
+		for (j = 0; j < NUMBER_DATA; j++) {
 			iris_norm[i].value[j] = iris_norm[i].value[j] / norm_vector; 
 		}
 	}
@@ -116,7 +116,7 @@ void shuffle_data(irisData_t *iris_tab, irisRand_t *iris_shuffled, int number_li
 irisData_t* average (irisData_t *iris_tab, int number_line) {
 	irisData_t *iris_average = allocIrisData_t(1);
 	int i, j;
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < NUMBER_DATA; i++) {
 		for (j = 0; j < number_line; j++) {
 			iris_average->value[i] += iris_tab[j].value[i];
 		}
@@ -128,7 +128,7 @@ irisData_t* average (irisData_t *iris_tab, int number_line) {
 irisData_t* interval_bound (irisData_t *iris_tab, int boolean, double interval) {
 	int i;
 	irisData_t* iris_interval = allocIrisData_t(1);
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < NUMBER_DATA; i++) {
 		iris_interval->value[i] = iris_tab->value[i];
 		if (boolean == 1) {
 			iris_interval->value[i] += interval;
@@ -143,7 +143,7 @@ net_t* allocNet_t (int size_horiz, int size_verti) {
 	net_t* tmp;
 	int i;
 	tmp = malloc(sizeof(net_t));
-	tmp->capteur = malloc(4 * sizeof(double));
+	tmp->capteur = malloc(NUMBER_DATA * sizeof(double));
 	tmp->map = malloc(size_verti * sizeof(irisData_t*));
 	for (i = 0; i < size_verti; i++) {
 		tmp->map[i] = malloc(size_horiz * sizeof(irisData_t));
@@ -156,7 +156,7 @@ void print_net_map_node(net_t *net, int number_node_horiz, int number_node_verti
 	for (i = 0; i < number_node_verti; i++) {
 		for (j = 0; j < number_node_horiz; j++) {
 			printf("i : %d, j : %d \n", i, j);
-			for(k = 0; k < 4; k++) {
+			for(k = 0; k < NUMBER_DATA; k++) {
 				printf("k : %d = %f\n", k, net->map[i][j].value[k]);
 			}
 		}
@@ -171,7 +171,7 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 	irisData_t *node = allocIrisData_t(number_node_total); // Tableau à 1 dimension
 
 	for (i = 0; i < number_node_total; i++) {
-		for (j = 0; j < 4; j++) {
+		for (j = 0; j < NUMBER_DATA; j++) {
 			num = (rand() / (double)RAND_MAX) * (upper->value[j] - lower->value[j]) + lower->value[j];
 			node[i].value[j] = num;
 		}
@@ -179,7 +179,7 @@ net_t* random_in_interval (irisData_t *lower, irisData_t *upper, int number_node
 
 	for (i = 0; i < number_node_verti; i++) {
 		for (j = 0; j < number_node_horiz; j++) {
-			for(k = 0; k < 4; k++) {
+			for(k = 0; k < NUMBER_DATA; k++) {
 				net->map[i][j] = node[i * number_node_horiz + j];
 			}
 		}
@@ -214,7 +214,7 @@ dist_eucli_t** find_bmu (net_t *net, int number_node_horiz, int number_node_vert
 	for (i = 0; i < number_node_verti; i++) { 
 		for (j = 0; j < number_node_horiz; j++) {
 			distance = 0.0;
-			for (k = 0; k < 4; k++) {
+			for (k = 0; k < NUMBER_DATA; k++) {
 				distance = distance + pow(fabs(net->map[i][j].value[k] - net->capteur[k]), 2);
 			}
 			distance = sqrt(distance);
@@ -275,7 +275,7 @@ void voisin (net_t *net, dist_eucli_t **bmu, int number_node_horiz, int number_n
 
 	for (i = i_start; i < i_end; i++) {
 		for (j = j_start; j < j_end; j++) {
-			for (k = 0; k < 4; k++) {
+			for (k = 0; k < NUMBER_DATA; k++) {
 				net->map[i][j].value[k] = net->map[i][j].value[k] + alpha * (net->capteur[k] - net->map[i][j].value[k]);
 			}
 		}
@@ -298,12 +298,12 @@ void etiquettage (net_t *net, irisRand_t *iris_shuffled, int number_line, int nu
 			//printf("i = %d, j  = %d\n", i, j);
 			for (k = 0; k < number_line; k++) { // On compare à chaque vecteur de donnée
 				identique = 0;
-				for (l = 0; l < 4; l++) {       // Les valeurs de chaque donnée
+				for (l = 0; l < NUMBER_DATA; l++) {       // Les valeurs de chaque donnée
 					if (net->map[i][j].value[l] == iris_shuffled[k].irisDataTab->value[l]) {
 						identique++;
 					}
 				}
-				if (identique == 4) {
+				if (identique == NUMBER_DATA) {
 					if (strcmp(iris_shuffled[k].irisDataTab->name, "Iris-setosa") == 0) {
 						resultat[i][j] = 1;	
 					} else if (strcmp(iris_shuffled[k].irisDataTab->name, "Iris-versicolor") == 0) {
@@ -350,7 +350,7 @@ void apprentissage (int iteration_max, irisRand_t *iris_shuffled, net_t *net, in
 
 		// Itére sur les vecteurs de données mélangés
 		for (j = 0; j < number_line; j++) {
-			for (k = 0; k < 4; k++) {
+			for (k = 0; k < NUMBER_DATA; k++) {
 				net->capteur[k] = iris_shuffled[j].irisDataTab->value[k];
 			}
 			bmu = find_bmu (net, number_node_horiz, number_node_verti);

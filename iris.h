@@ -4,6 +4,8 @@
 #include <math.h>
 #include <time.h>
 
+#define NUMBER_DATA 4
+
 typedef struct iris {
 	double* value;
 	double size_line;
@@ -24,7 +26,7 @@ typedef struct net {
 	int neighborhood; // Rayon de voisinage
 } net_t;
 
-typedef struct bmu {
+typedef struct dist_eucli {
 	double distance;
 	int x;
 	int y;

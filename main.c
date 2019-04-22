@@ -5,7 +5,6 @@ int main() {
 	irisRand_t *iris_shuffled;
 	irisData_t *iris_average;
 	int number_line;
-	int number_data = 4;
 
 	irisData_t *iris_interval_upper;
 	irisData_t *iris_interval_lower;
@@ -29,15 +28,15 @@ int main() {
 
 	take_line(file_opened, iris_tab);
 
-	print_data(iris_tab, number_line);
+	//print_data(iris_tab, number_line);
 
-	printf("\n/////////////////////////////////////////////\n\nNorm of the vector:\n\n");
+	//printf("\n/////////////////////////////////////////////\n\nNorm of the vector:\n\n");
 
 	normalize(iris_tab, number_line);
 
-	print_data(iris_tab, number_line);
+	//print_data(iris_tab, number_line);
 
-	printf("\n/////////////////////////////////////////////\n\nShuffle the vector:\n\n");
+	//printf("\n/////////////////////////////////////////////\n\nShuffle the vector:\n\n");
 
 	iris_shuffled = malloc(number_line * sizeof(irisRand_t));
 
@@ -45,28 +44,26 @@ int main() {
 	
 	shuffle_data(iris_tab, iris_shuffled, number_line);
 
-	print_shuffle_data(iris_shuffled, number_line);
+	//print_shuffle_data(iris_shuffled, number_line);
 
 	iris_average = average(iris_tab, number_line);
 
-	printf("\nVecteur moyen\n");
-	print_data(iris_average, 1);
+	/*printf("\nVecteur moyen\n");
+	print_data(iris_average, 1);*/
 
 	iris_interval_upper = interval_bound(iris_average, 1, interval);
 	iris_interval_lower = interval_bound(iris_average, 0, interval);
 
-	printf("\nLimite inférieure\n");
+	/*printf("\nLimite inférieure\n");
 	print_data(iris_interval_lower, 1);
 	printf("\nLimite supérieure\n");
-	print_data(iris_interval_upper, 1);
+	print_data(iris_interval_upper, 1);*/
 
-	printf("a\n");
-
-	printf("\nVecteur de neurones\n");
+	//printf("\nVecteur de neurones\n");
 	net = random_in_interval(iris_interval_lower, iris_interval_upper, number_node_horiz, number_node_verti);
 	net->neighborhood = 3; // la variable net est alloué dans la fonction rand_in_interval, donc on peut met cette assignation ici
 
-	print_net_map_node(net, number_node_horiz, number_node_verti);
+	//print_net_map_node(net, number_node_horiz, number_node_verti);
 
 	printf("\n\033[22;31mIris-setosa\n");
 	printf("\033[22;32mIris-versicolor\n");
